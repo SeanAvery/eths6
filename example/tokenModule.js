@@ -9,9 +9,13 @@ const params = {
 
 class TokenServer extends Eths6 {
   constructor(params) {
-    super()
-    console.log('TokenServer constructor', params)
-    console.log('Eths6', Eths6)
+    super(params)
+    this.parseParams(params)
+  }
+
+  async parseParams(params) {
+    console.log('params', params)
+    console.log('Eths6', this.testFunction(10))
   }
 }
 
