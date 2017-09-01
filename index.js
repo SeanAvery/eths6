@@ -1,6 +1,6 @@
 class Eths6 {
-  constructor(params) {
-    console.log('hit constructor', params.file)
+  constructor() {
+    console.log('hit constructor')
   }
 
   testFunction(x) {

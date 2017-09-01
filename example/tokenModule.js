@@ -1,4 +1,4 @@
-const Eths6 = require('../index')
+import Eths6 from '../index'
 
 const params = {
   file: './Token.sol',
@@ -10,7 +10,8 @@ const params = {
 class TokenServer extends Eths6 {
   constructor(params) {
     super()
-    console.log('TokenServer constructor')
+    console.log('TokenServer constructor', params)
+    console.log('Eths6', Eths6)
   }
 }
 
