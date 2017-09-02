@@ -20,7 +20,6 @@ export default class Eths6 {
     COMPILE LIBRARY
   */
   async compile() {
-    console.log(1)
     const compiled = await this.checkCompiled()
     if(!compiled) await this.compileContract()
   }
@@ -37,7 +36,7 @@ export default class Eths6 {
     try {
       const data = await this.getContractData()
       console.log('data', data)
-      await this.solcCompile()
+      await this.solcCompile(data)
     } catch (err) {
       console.log('### Error compiling contract', err)
     }
@@ -45,15 +44,17 @@ export default class Eths6 {
   }
 
   async getContractData() {
-    console.log('path', `${process.cwd()}/${this.file}.sol`)
-    fs.readFile(`${this.cwd}/${this.file}.sol`, (err, data) => {
-      if(err) throw new Error('### Could not get contract data')
-      console.log('data', data)
-      return data.toString()
+    return new Promise((res, rej) => {
+      fs.readFile(`${this.cwd}/${this.file}.sol`, (err, data) => {
+        if(err) rej(err)
+        console.log('data(in callback)', data)
+        res(data)
+      })
     })
   }
 
   async solcCompile(data) {
+    console.log('data(solc)', data)
     const compiledData = solc.compile(data)
     console.log('compiledData', compiledData)
   }
