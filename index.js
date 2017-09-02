@@ -1,15 +1,26 @@
+import fs from 'fs'
+
 export default class Eths6 {
   constructor(params) {
-    console.log('params (eths6)', params)
-    console.log('hit constructor')
+    this.listeners = []
+    this.crons = []
     this.state = {}
   }
 
-  async compile() {
-
+  async setup(params) {
+    if (!params.file) new Error('must specify ./path/to/Contract.sol')
+    this.file = params.file
+    await compile()
   }
 
-  async deploy() {
+  /*
+    COMPILE LIBRARY
+  */
+  async compile() {
+    const compiled = await checkCompiled()
+  }
 
+  async checkcompiled() {
+  
   }
 }
