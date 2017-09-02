@@ -1,5 +1,6 @@
 import fs from 'fs'
 import solc from 'solc'
+import json from 'jsonfile'
 
 export default class Eths6 {
   constructor(params) {
@@ -19,6 +20,7 @@ export default class Eths6 {
   /*
     COMPILE LIBRARY
   */
+
   async compile() {
     const compiled = await this.checkCompiled()
     if(!compiled) await this.compileContract()
@@ -37,8 +39,8 @@ export default class Eths6 {
   async compileContract() {
     try {
       const data = await this.getContractData()
-      console.log('data', data)
-      await this.solcCompile(data)
+      const compiled = await this.solcCompile(data)
+      await this.writeCompiled(compiled)
     } catch (err) {
       console.log('### Error compiling contract', err)
     }
@@ -56,7 +58,18 @@ export default class Eths6 {
   }
 
   async solcCompile(data) {
-    const compiledData = solc.compile(data)
-    console.log('compiledData', compiledData)
+    return new Promise((res, rej) => {
+      const compiledData = solc.compile(data)
+      res(compiledData)
+    })
+  }
+
+  async writeCompiled(compiled) {
+    return new Promise((res, rej) => {
+      json.writeFile(`${this.cwd}/${this.file}.compiled.json`, compiled, (err) => {
+        if (err) rej(err)
+        res(true)
+      })
+    })
   }
 }
