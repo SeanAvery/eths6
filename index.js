@@ -38,7 +38,7 @@ export default class Eths6 {
     return new Promise((res, rej) => {
       fs.stat(`${process.cwd()}/${this.file}.compiled.json`, (err, stat) => {
         if (err) res(false)
-        // console.log('### compiled exists', stat)
+        console.log('### compiled exists')
         res(true)
       })
     })
@@ -52,7 +52,6 @@ export default class Eths6 {
     } catch (err) {
       console.log('### Error compiling contract', err)
     }
-
   }
 
   async getContractData() {
@@ -90,7 +89,9 @@ export default class Eths6 {
       const compiled = await this.getCompiled()
       this.bytecode = compiled.contracts[':'+this.file].bytecode
       this.abi = compiled.contracts[':'+this.file].interface
-      await this.estimateDeploymentGas()
+      const est = await this.estimateDeploymentGas()
+      const gasPrice = await this.averageGasPrice()
+      // await this.deployContract({adf})
     } catch (err) {
       console.log('### Error deploying contract', err)
     }
@@ -105,20 +106,33 @@ export default class Eths6 {
     })
   }
 
+  async deployContract() {
+    return new Promise((res, rej) => {
+      this.contract = this.web3.eth.Contract(this.abi)
+    })
+  }
+
+  /*
+    WEB3 UTILS
+  */
+
   async estimateDeploymentGas() {
     return new Promise((res, rej) => {
-      console.log('made it here')
       this.web3.eth.estimateGas({ data: this.bytecode })
-      .then(res => {
-        console.log('res', res)
-        res(res.toNumber())
+      .then(est => {
+        res(est)
       }).catch(err => rej(err))
     })
   }
 
-  async deployContract() {
+  async averageGasPrice() {
     return new Promise((res, rej) => {
-
+      this.web3.eth.getGasPrice()
+      .then(est => {
+        console.log('gas price', est)
+        res(est)
+      }).catch(err => rej(err))
     })
   }
+
 }
