@@ -19,6 +19,8 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-es2017": "^6.24.1",
     "babel-preset-es2105": "0.0.0",
-    "solc": "^0.4.16"
+    "jsonfile": "^3.0.1",
+    "solc": "^0.4.16",
+    "web3": "^1.0.0-beta.18"
   }
 }
