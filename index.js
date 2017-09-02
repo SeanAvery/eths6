@@ -17,6 +17,8 @@ export default class Eths6 {
     this.file = params.file
     if (!params.web3Provider) params.web3Provider = 'http://localhost:8545'
     this.web3 = new Web3(params.web3Provider)
+    this.owner = await this.getAccount()
+    console.log('this.owner', this.owner)
     await this.compile()
     await this.deploy()
   }
@@ -88,7 +90,7 @@ export default class Eths6 {
     try {
       const compiled = await this.getCompiled()
       this.bytecode = compiled.contracts[':'+this.file].bytecode
-      this.abi = compiled.contracts[':'+this.file].interface
+      this.abi = JSON.parse(compiled.contracts[':'+this.file].interface)
       const est = await this.estimateDeploymentGas()
       const gasPrice = await this.averageGasPrice()
       this.contract = new this.web3.eth.Contract(this.abi)
@@ -110,9 +112,9 @@ export default class Eths6 {
   async deployContract() {
     return new Promise((res, rej) => {
       console.log('type of this.bytecode', typeof this.bytecode)
-
-      // this.contract.deploy(this.bytecode)
-
+      // this.contract.new({
+      //   from:
+      // })
       res(true)
     })
   }
@@ -120,6 +122,15 @@ export default class Eths6 {
   /*
     WEB3 UTILS
   */
+
+  async getAccount() {
+    return new Promise((res, rej) => {
+      this.web3.eth.getAccounts()
+      .then(accts => {
+        res(accts[0])
+      }).catch(err => rej(err))
+    })
+  }
 
   async estimateDeploymentGas() {
     return new Promise((res, rej) => {
