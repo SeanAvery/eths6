@@ -1,4 +1,5 @@
 import fs from 'fs'
+import solc from 'solc'
 
 export default class Eths6 {
   constructor(params) {
@@ -20,7 +21,6 @@ export default class Eths6 {
   async compile() {
     console.log(1)
     const compiled = await this.checkCompiled()
-    console.log(2)
     if(!compiled) await this.compileContract()
   }
 
@@ -33,10 +33,10 @@ export default class Eths6 {
   }
 
   async compileContract() {
-    console.log('compiling contract!!')
     try {
-      const data = await getContractData()
-      await solcCompile()
+      const data = await this.getContractData()
+      console.log('data', data)
+      await this.solcCompile()
     } catch (err) {
       console.log('### Error compiling contract', err)
     }
@@ -44,9 +44,16 @@ export default class Eths6 {
   }
 
   async getContractData() {
+    console.log('path', `${process.cwd()}/${this.file}.sol`)
     fs.readFile(`${process.cwd()}/${this.file}.sol`, (err, data) => {
       if(err) throw new Error('### Could not get contract data')
+      console.log('data', data)
       return data.toString()
     })
+  }
+
+  async solcCompile(data) {
+    const compiledData = solc.compile(data)
+    console.log('compiledData', compiledData)
   }
 }
