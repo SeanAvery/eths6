@@ -17,8 +17,6 @@ export default class Eths6 {
     this.file = params.file
     if (!params.web3Provider) params.web3Provider = 'http://localhost:8545'
     this.web3 = new Web3(params.web3Provider)
-    console.log('this.web3', this.web3)
-    await configureWeb3()
     await this.compile()
     await this.deploy()
   }
@@ -40,7 +38,7 @@ export default class Eths6 {
     return new Promise((res, rej) => {
       fs.stat(`${process.cwd()}/${this.file}.compiled.json`, (err, stat) => {
         if (err) res(false)
-        console.log('### compiled exists', stat)
+        // console.log('### compiled exists', stat)
         res(true)
       })
     })
@@ -50,7 +48,6 @@ export default class Eths6 {
     try {
       const data = await this.getContractData()
       const compiled = await this.solcCompile(data)
-      console.log('compiled before fs', compiled)
       await this.writeCompiled(compiled)
     } catch (err) {
       console.log('### Error compiling contract', err)
@@ -93,6 +90,7 @@ export default class Eths6 {
       const compiled = await this.getCompiled()
       this.bytecode = compiled.contracts[':'+this.file].bytecode
       this.abi = compiled.contracts[':'+this.file].interface
+      await this.estimateDeploymentGas()
     } catch (err) {
       console.log('### Error deploying contract', err)
     }
@@ -100,7 +98,6 @@ export default class Eths6 {
 
   async getCompiled() {
     return new Promise((res, rej) => {
-      console.log('file ipath', `${this.cwd}/${this.file}.compiled.json`)
       fs.readFile(`${this.cwd}/${this.file}.compiled.json`, (err, data) => {
         if(err) rej(err)
         res(JSON.parse(data.toString('utf8')))
@@ -108,5 +105,20 @@ export default class Eths6 {
     })
   }
 
+  async estimateDeploymentGas() {
+    return new Promise((res, rej) => {
+      console.log('made it here')
+      this.web3.eth.estimateGas({ data: this.bytecode })
+      .then(res => {
+        console.log('res', res)
+        res(res.toNumber())
+      }).catch(err => rej(err))
+    })
+  }
 
+  async deployContract() {
+    return new Promise((res, rej) => {
+
+    })
+  }
 }
