@@ -15,6 +15,7 @@ export default class Eths6 {
     if (!params.file) throw new Error('must specify ./path/to/Contract.sol')
     this.file = params.file
     await this.compile()
+    await this.deploy()
   }
 
   /*
@@ -22,8 +23,12 @@ export default class Eths6 {
   */
 
   async compile() {
-    const compiled = await this.checkCompiled()
-    if(!compiled) await this.compileContract()
+    try {
+      const compiled = await this.checkCompiled()
+      if(!compiled) await this.compileContract()
+    } catch (err) {
+      console.log('### Error compiling', err)
+    }
   }
 
   async checkCompiled() {
@@ -69,6 +74,29 @@ export default class Eths6 {
       json.writeFile(`${this.cwd}/${this.file}.compiled.json`, compiled, (err) => {
         if (err) rej(err)
         res(true)
+      })
+    })
+  }
+
+  /*
+    DEPLOY LIBRARY
+  */
+
+  async deploy() {
+    console.log('hit deploy...')
+    try {
+      const compiled = await this.getCompiled()
+    } catch (err) {
+      console.log('### Error deploying contract', err)
+    }
+  }
+
+  async getCompiled() {
+    return new Promise((res, rej) => {
+      console.log('file ipath', `${this.cwd}/${this.file}.compiled.json`)
+      fs.readFile(`${this.cwd}/${this.file}.compiled.json`, (err, data) => {
+        if(err) rej(err)
+        res(data)
       })
     })
   }
