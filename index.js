@@ -49,14 +49,13 @@ export default class Eths6 {
     return new Promise((res, rej) => {
       fs.readFile(`${this.cwd}/${this.file}.sol`, (err, data) => {
         if(err) rej(err)
-        console.log('data(in callback)', data)
-        res(data)
+        console.log('data(in callback)', data.toString('utf8'))
+        res(data.toString('utf8'))
       })
     })
   }
 
   async solcCompile(data) {
-    console.log('data(solc)', data)
     const compiledData = solc.compile(data)
     console.log('compiledData', compiledData)
   }
