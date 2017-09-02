@@ -9,7 +9,7 @@ export default class Eths6 {
     this.crons = []
     this.state = {}
     this.cwd = params.cwd
-    this.tokenParams = params.tokenParams
+    this.contractParams = params.contractParams
     this.setup(params)
   }
 
@@ -19,7 +19,6 @@ export default class Eths6 {
     if (!params.web3Provider) params.web3Provider = 'http://localhost:8545'
     this.web3 = new Web3(params.web3Provider)
     this.owner = await this.getAccount()
-    console.log('this.owner', this.owner)
     await this.compile()
     await this.deploy()
   }
@@ -95,7 +94,7 @@ export default class Eths6 {
       const est = await this.estimateDeploymentGas()
       const gasPrice = await this.averageGasPrice()
       this.contract = new this.web3.eth.Contract(this.abi)
-      await this.deployContract()
+      await this.deployContract(est, gasPrice)
     } catch (err) {
       console.log('### Error deploying contract', err)
     }
@@ -110,15 +109,20 @@ export default class Eths6 {
     })
   }
 
-  async deployContract(gasEstiamte) {
+  async deployContract(gasEstimate, gasPrice) {
     return new Promise((res, rej) => {
       console.log('type of this.bytecode', typeof this.bytecode)
       this.contract.deploy({
         data: this.bytecode,
-        arguments: [
-          ...this.constructor
-        ]
-      })
+        arguments: this.contractParams,
+
+      }).send({
+        from: this.owner,
+        gas: gasEstimate + 100000,
+        gasPrice: gasPrice
+      }).then(inst => {
+        console.log('inst', inst)
+      }).catch(err => rej(err))
       res(true)
     })
   }
