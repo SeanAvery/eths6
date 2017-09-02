@@ -6,6 +6,7 @@ export default class Eths6 {
     this.listeners = []
     this.crons = []
     this.state = {}
+    this.cwd = params.cwd
     this.setup(params)
   }
 
@@ -45,7 +46,7 @@ export default class Eths6 {
 
   async getContractData() {
     console.log('path', `${process.cwd()}/${this.file}.sol`)
-    fs.readFile(`${process.cwd()}/${this.file}.sol`, (err, data) => {
+    fs.readFile(`${this.cwd}/${this.file}.sol`, (err, data) => {
       if(err) throw new Error('### Could not get contract data')
       console.log('data', data)
       return data.toString()
