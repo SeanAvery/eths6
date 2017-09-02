@@ -5,22 +5,34 @@ export default class Eths6 {
     this.listeners = []
     this.crons = []
     this.state = {}
+    this.setup(params)
   }
 
   async setup(params) {
-    if (!params.file) new Error('must specify ./path/to/Contract.sol')
+    if (!params.file) throw new Error('must specify ./path/to/Contract.sol')
     this.file = params.file
-    await compile()
+    await this.compile()
   }
 
   /*
     COMPILE LIBRARY
   */
   async compile() {
-    const compiled = await checkCompiled()
+    console.log(1)
+    const compiled = await this.checkCompiled()
+    console.log(2)
+    if(!compiled) await this.compileContract()
   }
 
   async checkcompiled() {
-  
+    fs.stat(`${process.cwd()}/${this.file}.compiled.json`, (err, stat) => {
+      if (err) return false
+      console.log('stat', stat)
+      return true
+    })
+  }
+
+  async compileContract() {
+    console.log('compiling contract!!')
   }
 }
