@@ -1,6 +1,7 @@
 import fs from 'fs'
 import solc from 'solc'
 import json from 'jsonfile'
+import Web3 from 'web3'
 
 export default class Eths6 {
   constructor(params) {
@@ -14,6 +15,10 @@ export default class Eths6 {
   async setup(params) {
     if (!params.file) throw new Error('must specify ./path/to/Contract.sol')
     this.file = params.file
+    if (!params.web3Provider) params.web3Provider = 'http://localhost:8545'
+    this.web3 = new Web3(params.web3Provider)
+    console.log('this.web3', this.web3)
+    await configureWeb3()
     await this.compile()
     await this.deploy()
   }
@@ -86,11 +91,8 @@ export default class Eths6 {
   async deploy() {
     try {
       const compiled = await this.getCompiled()
-      console.log('type', typeof compiled)
       this.bytecode = compiled.contracts[':'+this.file].bytecode
       this.abi = compiled.contracts[':'+this.file].interface
-      console.log('this.bytecode', this.bytecode)
-      console.log('this.abi', this.abi)
     } catch (err) {
       console.log('### Error deploying contract', err)
     }
@@ -105,4 +107,6 @@ export default class Eths6 {
       })
     })
   }
+
+
 }
