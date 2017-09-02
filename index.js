@@ -45,6 +45,7 @@ export default class Eths6 {
     try {
       const data = await this.getContractData()
       const compiled = await this.solcCompile(data)
+      console.log('compiled before fs', compiled)
       await this.writeCompiled(compiled)
     } catch (err) {
       console.log('### Error compiling contract', err)
@@ -56,7 +57,6 @@ export default class Eths6 {
     return new Promise((res, rej) => {
       fs.readFile(`${this.cwd}/${this.file}.sol`, (err, data) => {
         if(err) rej(err)
-        console.log('data(in callback)', data.toString('utf8'))
         res(data.toString('utf8'))
       })
     })
@@ -64,7 +64,8 @@ export default class Eths6 {
 
   async solcCompile(data) {
     return new Promise((res, rej) => {
-      const compiledData = solc.compile(data)
+      const compiledData = solc.compile(data, 1)
+      if (compiledData.errors) rej(compiledData)
       res(compiledData)
     })
   }
@@ -83,9 +84,13 @@ export default class Eths6 {
   */
 
   async deploy() {
-    console.log('hit deploy...')
     try {
       const compiled = await this.getCompiled()
+      console.log('type', typeof compiled)
+      this.bytecode = compiled.bytecode
+      this.abi = compiled.interface
+      console.log('this.bytecode', this.bytecode)
+      console.log('this.abi', this.abi)
     } catch (err) {
       console.log('### Error deploying contract', err)
     }
@@ -96,7 +101,7 @@ export default class Eths6 {
       console.log('file ipath', `${this.cwd}/${this.file}.compiled.json`)
       fs.readFile(`${this.cwd}/${this.file}.compiled.json`, (err, data) => {
         if(err) rej(err)
-        res(data)
+        res(JSON.parse(data.toString('utf8')))
       })
     })
   }
