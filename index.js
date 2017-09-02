@@ -91,7 +91,8 @@ export default class Eths6 {
       this.abi = compiled.contracts[':'+this.file].interface
       const est = await this.estimateDeploymentGas()
       const gasPrice = await this.averageGasPrice()
-      // await this.deployContract({adf})
+      this.contract = new this.web3.eth.Contract(this.abi)
+      await this.deployContract()
     } catch (err) {
       console.log('### Error deploying contract', err)
     }
@@ -108,7 +109,11 @@ export default class Eths6 {
 
   async deployContract() {
     return new Promise((res, rej) => {
-      this.contract = this.web3.eth.Contract(this.abi)
+      console.log('type of this.bytecode', typeof this.bytecode)
+
+      // this.contract.deploy(this.bytecode)
+
+      res(true)
     })
   }
 
@@ -134,5 +139,4 @@ export default class Eths6 {
       }).catch(err => rej(err))
     })
   }
-
 }
