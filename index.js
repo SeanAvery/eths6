@@ -9,6 +9,7 @@ export default class Eths6 {
     this.crons = []
     this.state = {}
     this.cwd = params.cwd
+    this.tokenParams = params.tokenParams
     this.setup(params)
   }
 
@@ -109,12 +110,15 @@ export default class Eths6 {
     })
   }
 
-  async deployContract() {
+  async deployContract(gasEstiamte) {
     return new Promise((res, rej) => {
       console.log('type of this.bytecode', typeof this.bytecode)
-      // this.contract.new({
-      //   from:
-      // })
+      this.contract.deploy({
+        data: this.bytecode,
+        arguments: [
+          ...this.constructor
+        ]
+      })
       res(true)
     })
   }
