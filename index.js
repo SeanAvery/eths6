@@ -87,8 +87,8 @@ export default class Eths6 {
     try {
       const compiled = await this.getCompiled()
       console.log('type', typeof compiled)
-      this.bytecode = compiled.bytecode
-      this.abi = compiled.interface
+      this.bytecode = compiled.contracts[':'+this.file].bytecode
+      this.abi = compiled.contracts[':'+this.file].interface
       console.log('this.bytecode', this.bytecode)
       console.log('this.abi', this.abi)
     } catch (err) {
