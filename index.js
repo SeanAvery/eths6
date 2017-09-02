@@ -25,10 +25,12 @@ export default class Eths6 {
   }
 
   async checkCompiled() {
-    fs.stat(`${process.cwd()}/${this.file}.compiled.json`, (err, stat) => {
-      if (err) return false
-      console.log('### compiled exists', stat)
-      return true
+    return new Promise((res, rej) => {
+      fs.stat(`${process.cwd()}/${this.file}.compiled.json`, (err, stat) => {
+        if (err) res(false)
+        console.log('### compiled exists', stat)
+        res(true)
+      })
     })
   }
 
