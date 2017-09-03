@@ -138,12 +138,12 @@ export default class Eths6 {
   async subscribeAllEvents() {
     return new Promise((res, rej) => {
       console.log('contract address', this.contract.options.address)
-      // this.contract.events.allEvents()
-      // .then((data) => {
-      //   console.log('data', data)
-      // }).catch(err => rej(err))
-      console.log('this.contract', this.contract)
-      res(true)
+      console.log('this.contract', this.contract.events.allEvents)
+      this.contract.events.allEvents((err, evts) => {
+        if (err) rej(err)
+        console.log('evts', evts)
+        res(evts)
+      })
     })
   }
 
