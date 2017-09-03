@@ -7,9 +7,10 @@ export default class Eths6 {
   constructor(params) {
     this.listeners = []
     this.crons = []
-    this.state = {}
     this.cwd = params.cwd
     this.contractParams = params.contractParams
+    this.db = params.db
+    this.state = {}
     this.setup(params)
   }
 
@@ -21,6 +22,7 @@ export default class Eths6 {
     this.owner = await this.getAccount()
     await this.compile()
     await this.deploy()
+    await this.subscribeEvents()
   }
 
   /*
@@ -32,7 +34,7 @@ export default class Eths6 {
       const compiled = await this.checkCompiled()
       if(!compiled) await this.compileContract()
     } catch (err) {
-      console.log('### Error compiling', err)
+      throw new Error('### Error compile contracts', err)
     }
   }
 
@@ -52,7 +54,7 @@ export default class Eths6 {
       const compiled = await this.solcCompile(data)
       await this.writeCompiled(compiled)
     } catch (err) {
-      console.log('### Error compiling contract', err)
+      throw new Error('### Error compiling contract', err)
     }
   }
 
@@ -95,6 +97,7 @@ export default class Eths6 {
       const gasPrice = await this.averageGasPrice()
       this.contract = new this.web3.eth.Contract(this.abi)
       await this.deployContract(est, gasPrice)
+      await this.
     } catch (err) {
       console.log('### Error deploying contract', err)
     }
@@ -121,9 +124,40 @@ export default class Eths6 {
         gas: gasEstimate + 100000,
         gasPrice: gasPrice
       }).then(inst => {
-        console.log('inst', inst)
+        res(inst)
       }).catch(err => rej(err))
       res(true)
+    })
+  }
+
+  /*
+    EVENTS
+  */
+
+  async subscribeEvents() {
+    try {
+
+    } catch (err) {
+      throw new Error('### Error subscribing to events', err)
+    }
+  }
+
+  async eventSubscriptions() {
+    return new Promise((res, rej) => {
+      console.log('made it here')
+      Object.keys(this.contract.events.allEvents).forEach(evt => {
+        console.log('evt', evt, typeof evt)
+      })
+      res(true)
+    })
+  }
+
+  /*
+    State
+  */
+  async updateState() {
+    return new Promise((res, rej) => {
+
     })
   }
 
