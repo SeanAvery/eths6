@@ -22,7 +22,7 @@ export default class Eths6 {
     this.owner = await this.getAccount()
     await this.compile()
     await this.deploy()
-    await this.subscribeEvents()
+    await this.subscribeAllEvents()
   }
 
   /*
@@ -96,8 +96,9 @@ export default class Eths6 {
       const est = await this.estimateDeploymentGas()
       const gasPrice = await this.averageGasPrice()
       this.contract = new this.web3.eth.Contract(this.abi)
+      console.log('est', est)
+      console.log('gasPrice', gasPrice)
       await this.deployContract(est, gasPrice)
-      await this.
     } catch (err) {
       console.log('### Error deploying contract', err)
     }
@@ -114,7 +115,6 @@ export default class Eths6 {
 
   async deployContract(gasEstimate, gasPrice) {
     return new Promise((res, rej) => {
-      console.log('type of this.bytecode', typeof this.bytecode)
       this.contract.deploy({
         data: this.bytecode,
         arguments: this.contractParams
@@ -122,8 +122,12 @@ export default class Eths6 {
         from: this.owner,
         gas: gasEstimate + 100000,
         gasPrice: gasPrice
-      }).then(inst => res(inst))
-      .catch(err => rej(err))
+      }).then(inst => {
+        this.contract = inst
+        res(inst)
+      }).catch(err => {
+        rej(err)
+      })
     })
   }
 
@@ -131,18 +135,15 @@ export default class Eths6 {
     EVENTS
   */
 
-  async subscribeEvents() {
-    try {
-      const events = await filterEvents()
-      console.log('events', events)
-    } catch (err) {
-      throw new Error('### Error subscribing to events', err)
-    }
-  }
-
-  async filterEvents() {
+  async subscribeAllEvents() {
     return new Promise((res, rej) => {
-
+      console.log('contract address', this.contract.options.address)
+      // this.contract.events.allEvents()
+      // .then((data) => {
+      //   console.log('data', data)
+      // }).catch(err => rej(err))
+      console.log('this.contract', this.contract)
+      res(true)
     })
   }
 
@@ -179,7 +180,6 @@ export default class Eths6 {
     return new Promise((res, rej) => {
       this.web3.eth.getGasPrice()
       .then(est => {
-        console.log('gas price', est)
         res(est)
       }).catch(err => rej(err))
     })
