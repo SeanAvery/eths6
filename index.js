@@ -2,6 +2,7 @@ import fs from 'fs'
 import solc from 'solc'
 import json from 'jsonfile'
 import Web3 from 'web3'
+this.queue_db = params.db.sublevel(`settlement_queue_${params.tokenA}_${params.tokenB}`)
 
 export default class Eths6 {
   constructor(params) {
@@ -9,7 +10,7 @@ export default class Eths6 {
     this.crons = []
     this.cwd = params.cwd
     this.contractParams = params.contractParams
-    this.db = params.db
+    this.db =
     this.state = {}
     this.setup(params)
   }
@@ -150,7 +151,19 @@ export default class Eths6 {
   /*
     State
   */
-  async updateState() {
+  async mutation() {
+    try {
+      await this.snapshot()
+    } catch (err) {
+      throw new Error('### Error in mutation', err)
+    }
+  }
+
+  async snapshot() {
+    
+  }
+
+  async updateState(variable, state) {
     return new Promise((res, rej) => {
 
     })
