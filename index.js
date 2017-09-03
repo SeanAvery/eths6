@@ -117,16 +117,13 @@ export default class Eths6 {
       console.log('type of this.bytecode', typeof this.bytecode)
       this.contract.deploy({
         data: this.bytecode,
-        arguments: this.contractParams,
-
+        arguments: this.contractParams
       }).send({
         from: this.owner,
         gas: gasEstimate + 100000,
         gasPrice: gasPrice
-      }).then(inst => {
-        res(inst)
-      }).catch(err => rej(err))
-      res(true)
+      }).then(inst => res(inst))
+      .catch(err => rej(err))
     })
   }
 
@@ -136,19 +133,16 @@ export default class Eths6 {
 
   async subscribeEvents() {
     try {
-
+      const events = await filterEvents()
+      console.log('events', events)
     } catch (err) {
       throw new Error('### Error subscribing to events', err)
     }
   }
 
-  async eventSubscriptions() {
+  async filterEvents() {
     return new Promise((res, rej) => {
-      console.log('made it here')
-      Object.keys(this.contract.events.allEvents).forEach(evt => {
-        console.log('evt', evt, typeof evt)
-      })
-      res(true)
+
     })
   }
 
@@ -168,18 +162,16 @@ export default class Eths6 {
   async getAccount() {
     return new Promise((res, rej) => {
       this.web3.eth.getAccounts()
-      .then(accts => {
-        res(accts[0])
-      }).catch(err => rej(err))
+      .then(accts => res(accts[0]))
+      .catch(err => rej(err))
     })
   }
 
   async estimateDeploymentGas() {
     return new Promise((res, rej) => {
       this.web3.eth.estimateGas({ data: this.bytecode })
-      .then(est => {
-        res(est)
-      }).catch(err => rej(err))
+      .then(est => res(est))
+      .catch(err => rej(err))
     })
   }
 
