@@ -1,4 +1,6 @@
 import Eths6 from '../index'
+import levelup from 'levelup'
+import sublevel from 'sublevel'
 
 const params = {
   file: 'Token',
@@ -11,7 +13,8 @@ const params = {
     "MOB",
     0,
     1000
-  ]
+  ],
+  db: sublevel(levelup('./db'))
 }
 
 class TokenServer extends Eths6 {
