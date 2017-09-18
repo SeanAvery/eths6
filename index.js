@@ -21,8 +21,6 @@ export default class Eths6 {
     if (!params.web3Provider) params.web3Provider = 'http://localhost:8545'
     this.web3 = new Web3(params.web3Provider)
     this.owner = await this.getAccount()
-    await this.compile()
-    await this.deploy()
   }
 
   /*
@@ -90,6 +88,7 @@ export default class Eths6 {
 
   async deploy() {
     try {
+      await this.compile()
       const compiled = await this.getCompiled()
       this.bytecode = compiled.contracts[':'+this.file].bytecode
       this.abi = JSON.parse(compiled.contracts[':'+this.file].interface)
@@ -139,11 +138,16 @@ export default class Eths6 {
     return new Promise((res, rej) => {
       console.log('contract address', this.contract.options.address)
       console.log('this.contract', this.contract.events.allEvents)
-      this.contract.events.allEvents((err, evts) => {
-        if (err) rej(err)
-        console.log('evts', evts)
-        res(evts)
-      })
+      // this.contract.events.allEvents((err, evts) => {
+      //   if (err) rej(err)
+      //   console.log('evts', evts)
+      //   res(evts)
+      // })
+      this.contract.events.allEvents('allEvents', {
+        fromBlock: 0,
+        toBlock: 'latest'
+      },
+      (err, evts) => console.log('evts', evts)
     })
   }
 
