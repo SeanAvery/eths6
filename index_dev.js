@@ -20,7 +20,6 @@ export default class Eths6 {
   async setup() {
     try {
       this.eth = new Eth(new Eth.HttpProvider(this.provider))
-      console.log('this.eth', this.eth)
       await this.compile()
       await this.deploy()
     } catch (err) {
@@ -83,7 +82,13 @@ export default class Eths6 {
       if (!compiled) await this.compile()
       const data = await this.getCompiled()
       this.bytecode = data.contracts[':' + this.file].bytecode
-      this.abi = data.contracts[':' + this.file].bytecode
+      this.abi = JSON.parse(data.contracts[':' + this.file].interface)
+      console.log('this.abi', this.abi)
+      this.contract = this.eth.contract(this.abi, this.bytecode)
+      console.log('this.contract', this.contract)
+      if(deploy) await this.contract.new()
+      else this.address = this.eth.conntract(this.abi).at(this.address)
+      console.log('this.address', this.address)
     } catch (err) {
       console.log('### ERROR in deploy', err)
     }
