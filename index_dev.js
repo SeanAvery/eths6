@@ -78,7 +78,10 @@ export default class Eths6 {
       const compiled = await this.checkCompiled()
       if (!compiled) await this.compile()
       const data = this.getCompiled()
-      console.log('data', data)
+      this.bytecode = compiled.contracts[':' + this.file].bytecode
+      this.abi = compiled.contracts[':' + this.file].bytecode
+      console.log('this.bytecode', this.bytecode)
+      console.log('this.abi', this.abi)
     } catch (err) {
       console.log('### ERROR in deploy', err)
     }
