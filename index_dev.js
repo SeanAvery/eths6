@@ -18,10 +18,15 @@ export default class Eths6 {
   async setup() {
     try {
       await this.compile()
+      await this.deploy()
     } catch (err) {
       console.log('### ERROR in setup', err)
     }
   }
+
+  /*
+    COMPILE LIBRARY
+  */
 
   async compile() {
     try {
@@ -29,8 +34,8 @@ export default class Eths6 {
       if (!compiled) {
         console.log('### compiled does not exist')
         const data = await this.getContractData()
-        const compiled = await solc.compile(data, 1)
-        console.log('compiled', compiled)
+        const cmpld = await solc.compile(data, 1)
+        await this.writeCompiled(cmpld)
       }
     } catch (err) {
       console.log('### ERROR compiling contract', err)
@@ -51,6 +56,40 @@ export default class Eths6 {
       fs.readFile(`${this.cwd}/${this.file}.sol`, (err, data) => {
         if (err) rej(err)
         res(data.toString('utf8'))
+      })
+    })
+  }
+
+  writeCompiled(compiled) {
+    return new Promise((res, rej) => {
+      fs.writeFile(`${this.cwd}/${this.file}.compiled.json`, JSON.stringify(compiled), (err) => {
+        if (err) rej(err)
+        res(true)
+      })
+    })
+  }
+
+  /*
+    DEPLOY LIBRARY
+  */
+
+  async deploy() {
+    try {
+      const compiled = await this.checkCompiled()
+      if (!compiled) await this.compile()
+      const data = this.getCompiled()
+      console.log('data', data)
+    } catch (err) {
+      console.log('### ERROR in deploy', err)
+    }
+  }
+
+  getCompiled() {
+    return new Promise((res, rej) => {
+      fs.readFile(`${this.cwd}/${this.file}.compiled.json`, (err, data) => {
+        if (err) rej(err)
+        console.log('data', data.toString('utf8'))
+        res(JSON.parse(data.toString('utf8')))
       })
     })
   }
