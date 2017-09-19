@@ -1,4 +1,5 @@
 import fs from 'fs'
+import solc from 'solc'
 
 export default class Eths6 {
   constructor(params) {
@@ -27,7 +28,8 @@ export default class Eths6 {
       const compiled = await this.checkCompiled()
       if (!compiled) {
         console.log('### compiled does not exist')
-        const compiled = await this.getContractData()
+        const data = await this.getContractData()
+        const compiled = await solc.compile(data, 1)
         console.log('compiled', compiled)
       }
     } catch (err) {
@@ -39,7 +41,6 @@ export default class Eths6 {
     return new Promise((res, rej) => {
       fs.stat(`${this.cwd}/${this.file}.compiled.json`, (err, stat) => {
         if (err) res(false)
-        console.log('### compiled already exists')
         res(true)
       })
     })
