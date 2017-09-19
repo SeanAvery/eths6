@@ -1,5 +1,6 @@
 import fs from 'fs'
 import solc from 'solc'
+import Eth from 'ethjs'
 
 export default class Eths6 {
   constructor(params) {
@@ -9,6 +10,7 @@ export default class Eths6 {
       if (!params.address) throw new Error('### must supply address if not deploying contract')
       this.address = params.address
     }
+    if (!params.provider) this.provider = 'http://localhost:8545'
     this.file = params.file
     this.cwd = params.cwd
     this.state = {}  // memory tree that is saved to disk
@@ -17,6 +19,8 @@ export default class Eths6 {
 
   async setup() {
     try {
+      this.eth = new Eth(new Eth.HttpProvider(this.provider))
+      console.log('this.eth', this.eth)
       await this.compile()
       await this.deploy()
     } catch (err) {
@@ -77,11 +81,9 @@ export default class Eths6 {
     try {
       const compiled = await this.checkCompiled()
       if (!compiled) await this.compile()
-      const data = this.getCompiled()
-      this.bytecode = compiled.contracts[':' + this.file].bytecode
-      this.abi = compiled.contracts[':' + this.file].bytecode
-      console.log('this.bytecode', this.bytecode)
-      console.log('this.abi', this.abi)
+      const data = await this.getCompiled()
+      this.bytecode = data.contracts[':' + this.file].bytecode
+      this.abi = data.contracts[':' + this.file].bytecode
     } catch (err) {
       console.log('### ERROR in deploy', err)
     }
@@ -91,9 +93,13 @@ export default class Eths6 {
     return new Promise((res, rej) => {
       fs.readFile(`${this.cwd}/${this.file}.compiled.json`, (err, data) => {
         if (err) rej(err)
-        console.log('data', data.toString('utf8'))
         res(JSON.parse(data.toString('utf8')))
       })
     })
   }
+
+  /*
+    UTILS
+  */
+
 }
