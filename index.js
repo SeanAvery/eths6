@@ -95,8 +95,6 @@ export default class Eths6 {
       const est = await this.estimateDeploymentGas()
       const gasPrice = await this.averageGasPrice()
       this.contract = new this.web3.eth.Contract(this.abi)
-      console.log('est', est)
-      console.log('gasPrice', gasPrice)
       await this.deployContract(est, gasPrice)
     } catch (err) {
       console.log('### Error deploying contract', err)
