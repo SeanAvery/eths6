@@ -83,10 +83,9 @@ export default class Eths6 {
       const data = await this.getCompiled()
       this.bytecode = data.contracts[':' + this.file].bytecode
       this.abi = JSON.parse(data.contracts[':' + this.file].interface)
-      console.log('this.abi', this.abi)
       this.contract = this.eth.contract(this.abi, this.bytecode)
       console.log('this.contract', this.contract)
-      if(deploy) await this.contract.new()
+      if(this.deploy) await this.contract.new()
       else this.address = this.eth.conntract(this.abi).at(this.address)
       console.log('this.address', this.address)
     } catch (err) {
