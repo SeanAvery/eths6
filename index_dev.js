@@ -25,7 +25,11 @@ export default class Eths6 {
   async compile() {
     try {
       const compiled = await this.checkCompiled()
-      console.log('compiled', compiled)
+      if (!compiled) {
+        console.log('### compiled does not exist')
+        const compiled = await this.getContractData()
+        console.log('compiled', compiled)
+      }
     } catch (err) {
       console.log('### ERROR compiling contract', err)
     }
@@ -39,5 +43,14 @@ export default class Eths6 {
         res(true)
       })
     })
-   }
+  }
+
+  getContractData() {
+    return new Promise((res, rej) => {
+      fs.readFile(`${this.cwd}/${this.file}.sol`, (err, data) => {
+        if (err) rej(err)
+        res(data.toString('utf8'))
+      })
+    })
+  }
 }
