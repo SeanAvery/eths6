@@ -90,11 +90,12 @@ export default class Eths6 {
       this.abi = JSON.parse(data.contracts[':' + this.file].interface)
       this.contract = this.eth.contract(this.abi, this.bytecode)
       const gasPrice = await this.eth.gasPrice()
+      console.log('gasPrice', gasPrice.toNumber())
       const estimate = await this.eth.estimateGas({data: this.bytecode})
-      console.log('estimate', estimate)
-      console.log('gasPrice', gasPrice)
-      // if (this.deploy) await this.contract.new({data: this.params, from: await this.getCoinbase()})
-      // else this.contract = this.eth.conntract(this.abi).at(this.address)
+      const coinbase = await this.getCoinbase()
+      if (this.deploy) this.address = await this.contract.new(...this.params, { from: coinbase, gasPrice: gasPrice, gas: estimate*2 })
+      else this.contract = this.eth.conntract(this.abi).at(this.address)
+      console.log('this.address', this.address)
     } catch (err) {
       console.log('### ERROR in deploy', err)
     }
