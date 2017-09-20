@@ -1,6 +1,8 @@
 import fs from 'fs'
 import solc from 'solc'
 import Eth from 'ethjs'
+import levelup from 'levelup'
+import sublevel from 'level-sublevel'
 
 export default class Eths6 {
   constructor(params) {
@@ -10,7 +12,10 @@ export default class Eths6 {
       if (!params.address) throw new Error('### must supply address if not deploying contract')
       this.address = params.address
     }
+    if (params.params) this.params = params.params
     if (!params.provider) this.provider = 'http://localhost:8545'
+    if (params.db) this.db = sublevel(params.db)
+    else this.db = sublevel(levelup(`./${this.file}`))
     this.file = params.file
     this.cwd = params.cwd
     this.state = {}  // memory tree that is saved to disk
@@ -84,10 +89,8 @@ export default class Eths6 {
       this.bytecode = data.contracts[':' + this.file].bytecode
       this.abi = JSON.parse(data.contracts[':' + this.file].interface)
       this.contract = this.eth.contract(this.abi, this.bytecode)
-      console.log('this.contract', this.contract)
-      if(this.deploy) await this.contract.new()
-      else this.address = this.eth.conntract(this.abi).at(this.address)
-      console.log('this.address', this.address)
+      if (this.deploy) await this.contract.new(...params)
+      else this.contract = this.eth.conntract(this.abi).at(this.address)
     } catch (err) {
       console.log('### ERROR in deploy', err)
     }
