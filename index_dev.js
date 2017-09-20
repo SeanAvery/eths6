@@ -84,13 +84,17 @@ export default class Eths6 {
   async deploy() {
     try {
       const compiled = await this.checkCompiled()
-      if (!compiled) await this.compile()
+        if (!compiled) await this.compile()
       const data = await this.getCompiled()
       this.bytecode = data.contracts[':' + this.file].bytecode
       this.abi = JSON.parse(data.contracts[':' + this.file].interface)
       this.contract = this.eth.contract(this.abi, this.bytecode)
-      if (this.deploy) await this.contract.new(...params)
-      else this.contract = this.eth.conntract(this.abi).at(this.address)
+      const gasPrice = await this.eth.gasPrice()
+      const estimate = await this.eth.estimateGas({data: this.bytecode})
+      console.log('estimate', estimate)
+      console.log('gasPrice', gasPrice)
+      // if (this.deploy) await this.contract.new({data: this.params, from: await this.getCoinbase()})
+      // else this.contract = this.eth.conntract(this.abi).at(this.address)
     } catch (err) {
       console.log('### ERROR in deploy', err)
     }
@@ -108,5 +112,12 @@ export default class Eths6 {
   /*
     UTILS
   */
-
+  async getCoinbase() {
+    try {
+      const accounts = await this.eth.accounts()
+      return accounts[0]
+    } catch (err) {
+      console.log('### ERROR in getCoinbase', err)
+    }
+  }
 }
