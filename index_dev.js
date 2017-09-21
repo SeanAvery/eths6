@@ -126,8 +126,12 @@ export default class Eths6 {
 
   async getState() {
     try {
-      console.log('this.abi', this.abi)
-      this.abi.map(comp => console.log('comp', comp))
+      const stateGetters = this.abi.filter(comp => {
+        if (comp.stateMutability === 'view') return true
+      })
+      stateGetters.map(fn => {
+        console.log('fn', fn)
+      })
     } catch (err) {
       console.log('### ERROR in getState', err)
     }
