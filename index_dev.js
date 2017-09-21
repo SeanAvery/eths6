@@ -3,6 +3,7 @@ import solc from 'solc'
 import Eth from 'ethjs'
 import levelup from 'levelup'
 import sublevel from 'level-sublevel'
+import delay from 'await-delay'
 
 export default class Eths6 {
   constructor(params) {
@@ -90,12 +91,11 @@ export default class Eths6 {
       this.abi = JSON.parse(data.contracts[':' + this.file].interface)
       this.contract = this.eth.contract(this.abi, this.bytecode)
       const gasPrice = await this.eth.gasPrice()
-      console.log('gasPrice', gasPrice.toNumber())
       const estimate = await this.eth.estimateGas({data: this.bytecode})
       const coinbase = await this.getCoinbase()
       if (this.deploy) this.address = await this.contract.new(...this.params, { from: coinbase, gasPrice: gasPrice, gas: estimate*2 })
-      else this.contract = this.eth.conntract(this.abi).at(this.address)
-      console.log('this.address', this.address)
+      this.contract = this.eth.contract(this.abi).at(this.address)
+      return true
     } catch (err) {
       console.log('### ERROR in deploy', err)
     }
@@ -108,6 +108,40 @@ export default class Eths6 {
         res(JSON.parse(data.toString('utf8')))
       })
     })
+  }
+
+  /*
+    STATE CRON
+  */
+
+  async cron() {
+    try {
+      await delay(5000)
+      await this.getState()
+      await this.cron()
+    } catch (err) {
+      console.log('### ERROR in cron', err)
+    }
+  }
+
+  async getState() {
+    try {
+      console.log('this.abi', this.abi)
+      this.abi.map(comp => console.log('comp', comp))
+    } catch (err) {
+      console.log('### ERROR in getState', err)
+    }
+  }
+
+  /*
+    EVENT FILTERING
+  */
+
+  async setupFilters() {
+    try {
+      this.abi.map(itm => console.log('item', item))
+    } catch (err) {
+    }
   }
 
   /*
